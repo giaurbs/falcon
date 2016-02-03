@@ -14,7 +14,7 @@ from ancillary import bcolors
 
 #variables
 PATH_TO_LOG = "/var/log/syslog*"
-DIR_OF_TEMPFILE = "/tmp/falcon_loganalyzer/"
+DIR_OF_TEMPFILE = "./tmp/"
 
 
 
@@ -51,9 +51,19 @@ def build_matrix():
 	#analyzing file
 	print (bcolors.GREEN+"Analyzing temporary file..."+bcolors.ENDC)
 
+	# initializing header and body of my matrix
+	# it looks like this [ header, 
+	#		       body [
+	#			      row1[field1, field2, ... , fieldn], 
+	#			      row2[field1, field2, ... , fieldn], 
+	#			      ...,
+	#		 	      rown[field1, field2, ... , fieldn] 
+	#			      ]
+
 	header = ""
 	body = []
 
+	#reading temporary file
 	fp = open(tempfile_fullpath)
 	for i, line in enumerate(fp):
 		if i <= 5:
@@ -65,13 +75,24 @@ def build_matrix():
 			geoloc = geoloc.replace("GeoIP Country Edition: ","")
 			geoloc = geoloc.replace("\n","")
 			row.append(geoloc)
+
+			# making nice the action -> getting rid of ] closing bracked and removing [UFW in the array
+			row[5] = row[5].replace("]","")
+			del row[4]
+
+			# adding the line to the body
 			body.append(row)
 	fp.close()
-
+	
+	#cleaning temporary files
+#	os.remove(DIR_OF_TEMPFILE+"*")
+#	os.remove("/opt/falcon/sky/tmp/*")
+	#returning the matrix
 	return [header,body]
 
 
-def sort_matrix(matrix):
-	sorted_matrix)=	sorted(matrix, key=lambda item: socket.inet_aton(item[0]))
-	sorted_matrix = sorted(matrix, key=lambda ip: ip[8])
-	return sorted_matrix
+# WIP
+#def sort_matrix(matrix):
+#	sorted_matrix)=	sorted(matrix, key=lambda item: socket.inet_aton(item[0]))
+#	sorted_matrix = sorted(matrix, key=lambda ip: ip[8])
+#	return sorted_matrix
